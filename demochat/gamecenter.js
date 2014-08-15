@@ -30,7 +30,6 @@ function GameCenter() {
 		wsPort = "8081";
 		var matches = document.URL.match(/http:\/\/([\d.]+)[\/:].*/);
         //var ip = matches[1];
-        //var ip="localhost";
         var ip="10.42.25.182";
         console.log("IP: " + ip);
         
@@ -61,10 +60,11 @@ function GameCenter() {
 
 	var receiveMessage = function(message) {
 		//convert JSON
-		//console.log(message);
+		console.log(message);
 
 		try {
 			var receivedMessage = JSON.parse(message.data);
+			
 
 			if(receivedMessage.user_id != null) {
 				ID = receivedObject.user_id;
@@ -73,7 +73,7 @@ function GameCenter() {
 				console.log(receivedMessage.body);
 				recievedCallBack(receivedMessage.body);
 			}else if (receivedMessage.action == "SYNC_LIST"){
-				console.log(receivedMessage.body);
+				console.log(receiveMessage);
 				receivedUserlist(receivedMessage);
 			}else {
 				console.log("undefined action: " + receivedMessage.action);
@@ -109,13 +109,10 @@ function GameCenter() {
 	var PROPERTY_SEPERATOR = "#PROPERTY#";
 
 	var alreadySet = "0";
-	this.setUser_with_property = function(name, property) {
+	this.setUser = function(name, property) {
 
 		sendMessage("set_user", "", name+PROPERTY_SEPERATOR+property);
 		sendMessage("create_list",'{"key":"UserProperty", "autoSync":"true"}',"");
 	}
 
-	this.setUser = function(name){
-		sendMessage("set_user", "", name);
-	}
 }

@@ -1,0 +1,56 @@
+<html>
+<head>
+<title> hello world </title>
+
+	<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="gamecenter.js"></script>
+
+
+</head>
+<body>
+<div>
+	<p><span>Your Name</span></p>
+	<input type="text" id="name" value="John"/>
+</div>
+<div>
+	<p><span>chat message</span></p>
+	<input type="text" id="msg"/>
+	<button id="btn-send">send</button>
+</div>
+
+<div id="log">
+
+</div>
+
+</body>
+<script>
+var connect = new GameCenter();
+
+
+$("#btn-send").click(function(event) {
+	sendMsg();
+});
+function sendMsg(){
+	var name=$("#name").val();
+	var msg=$("#msg").val();
+	var out=name+" says: "+msg;
+
+	var dataobject={"type":"broadcastChat", "contents":out};
+	connect.broadcasting(dataobject);
+	$("#msg").val('');
+}
+
+$('#msg').on("keypress", function(e) {
+        if (e.keyCode == 13) {
+            sendMsg();
+            return false; // prevent the button click from happening
+        }
+});
+
+function recievedCallBack(object){
+	if(object.type=="broadcastChat"){
+		$("#log").append("<p>"+object.contents+"</p>");
+	}
+}
+</script>
+</html>
