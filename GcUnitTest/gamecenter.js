@@ -148,7 +148,18 @@ function GameCenter() {
 		var vars={key:listName,autoSync:true};
 		sendMessage("create_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
+	this.getList =function(listName){
 
+	}
+	this.setObject=function(key,obj){
+		var vars={key:key};
+		sendMessage("set_Object", JSON.stringify(vars), JSON.stringify(obj));
+	}
+	this.getObject=function(key){
+		var vars={key:key};
+
+		sendMessage("get_Object", JSON.stringify(vars), null);
+	}
 
 	var alreadySet = "0";
 	this.setUser = function(name, property) {
