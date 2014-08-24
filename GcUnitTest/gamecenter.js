@@ -21,7 +21,7 @@ function GameCenter() {
 	        console.log('using MozillaWebSocket');
 	        window.WebSocket = window.MozWebSocket;
 	    } else if (!window.WebSocket) {
-
+	    	
 	        console.log('browser does not support websockets!');
 	        alert('browser does not support websockets!');
 	        return;
@@ -32,7 +32,7 @@ function GameCenter() {
         //var ip = matches[1];
         var ip="localhost";
         console.log("IP: " + ip);
-
+        
 		connection = new WebSocket("ws://" + ip + ":" + wsPort);
 
 		connection.onopen = function(event) { onConnection() };
@@ -65,20 +65,40 @@ function GameCenter() {
 		try {
 			var receivedMessage = JSON.parse(message.data);
 
-
-			if(receivedMessage.user_id != null) {
-				ID = receivedObject.user_id;
-				return;
-			} else if (receivedMessage.action == "broadcasting") {
-				console.log(receivedMessage.body);
-				recievedCallBack(receivedMessage.body);
-			}else if (receivedMessage.action == "SYNC_LIST"){
-				console.log(receiveMessage);
-				receivedUserlist(receivedMessage);
-			}else {
-				console.log("undefined action: " + receivedMessage.action);
-			}
 			console.log("Recevied Message " + receivedMessage);
+
+			console.log("Received action " + receivedMessage.action 
+						+ " (" + typeof receivedMessage.action + ")");
+
+			console.log("Received variables " + receivedMessage.variables 
+						+ " (" + typeof receivedMessage.variables + ")");
+			var variables = receivedMessage.variables;
+			try{
+				variables = JSON.parse(variables);
+				console.log("Parsed variables " + variables 
+						+ " (" + typeof variables + ")");
+			} catch(e){}
+
+			console.log("Received timestamp " + receivedMessage.timestamp 
+						+ " (" + typeof receivedMessage.timestamp + ")");
+
+			console.log("Received body " + receivedMessage.body 
+						+ " (" + typeof receivedMessage.body + ")");
+			var body = receivedMessage.body;
+			try{
+				body = JSON.parse(body);
+				console.log("Parsed body " + body
+						+ " (" + typeof body + ")");
+			} catch(e){}
+
+
+			if (receivedMessage.action == "broadcasting") {
+				
+			}else if (receivedMessage.action == "SYNC_LIST"){
+				
+			}else {
+			}
+			
 		} catch(error) {
 			console.log('message is not a JSON object' + error);
 		}
@@ -87,16 +107,23 @@ function GameCenter() {
 	var sendMessage = function(action, variables, body) {
 		//UNIX time stamp
 		var timestamp = Math.round(new Date().getTime() / 1000)
+		if(typeof variables != 'string'){
+			variables = JSON.stringify(variables);
+		}
+		if(typeof body != 'string'){
+			body = JSON.stringify(body);
+		}
 
 		var message = {
 			"action": action,
 			"variables": variables,
 			"timestamp": timestamp,
-			"body": body
+			"body": body 
 		}
 
 		if(connection.readyState == 1) {
 			connection.send(JSON.stringify(message));
+			console.log(JSON.stringify(message));
 		} else {
 			console.log("connection not ready!");
 		}
@@ -106,6 +133,7 @@ function GameCenter() {
 	this.broadcasting = function(body) {
 		sendMessage("broadcasting", "message", body);
 	}
+
 	this.createList = function(listName){
 
 		var vars={key:listName,autoSync:true};
@@ -122,13 +150,11 @@ function GameCenter() {
 	}
 
 
-	var PROPERTY_SEPERATOR = "#PROPERTY#";
-
 	var alreadySet = "0";
 	this.setUser = function(name, property) {
 
-		sendMessage("set_user", "", name+PROPERTY_SEPERATOR+property);
-		sendMessage("create_list",'{"key":"UserProperty", "autoSync":"true"}',"");
+		sendMessage("set_user", {}, {"name":name, "property":property});
+		sendMessage("create_list",{"key":"UserProperty", "autoSync":"true"},{});
 	}
 
 }
