@@ -146,20 +146,22 @@ function GameCenter() {
 	}
 	this.addListItem = function (listName,item){
 		var vars={key:listName,autoSync:true};
-		sendMessage("create_list_item", JSON.stringify(vars), JSON.stringify(item));
+		sendMessage("add_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
 	this.getList =function(listName){
-
+		var vars={key:listName};
+		sendMessage("get_list", JSON.stringify(vars), "");
 	}
 	this.setObject=function(key,obj){
-		var vars={key:key};
-		sendMessage("set_Object", JSON.stringify(vars), JSON.stringify(obj));
+		var vars={key:key,autoSync:true};
+		sendMessage("set_object", JSON.stringify(vars), JSON.stringify(obj));
 	}
 	this.getObject=function(key){
 		var vars={key:key};
 
-		sendMessage("get_Object", JSON.stringify(vars), null);
+		sendMessage("get_object", JSON.stringify(vars), null);
 	}
+
 
 	var alreadySet = "0";
 	this.setUser = function(name, property) {
