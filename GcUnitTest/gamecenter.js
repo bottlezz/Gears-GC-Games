@@ -12,6 +12,9 @@ function GameCenter() {
 	var ID;
 	//var mazeID;
 	var connection;
+	var GcObjectList;
+	var GcLib=this;
+
 	//to close connection connection.close();
 	(this.initial = function() {
 		console.log("loading!");
@@ -32,6 +35,8 @@ function GameCenter() {
         //var ip = matches[1];
         var ip="localhost";
         console.log("IP: " + ip);
+
+        GcObjectList=new Array();
         
 		connection = new WebSocket("ws://" + ip + ":" + wsPort);
 
@@ -77,26 +82,45 @@ function GameCenter() {
 				variables = JSON.parse(variables);
 				console.log("Parsed variables " + variables 
 						+ " (" + typeof variables + ")");
-			} catch(e){}
+			} catch(e){
+				//variables = null;
+			}
 
 			console.log("Received timestamp " + receivedMessage.timestamp 
 						+ " (" + typeof receivedMessage.timestamp + ")");
 
 			console.log("Received body " + receivedMessage.body 
 						+ " (" + typeof receivedMessage.body + ")");
+
 			var body = receivedMessage.body;
+			
 			try{
 				body = JSON.parse(body);
 				console.log("Parsed body " + body
 						+ " (" + typeof body + ")");
-			} catch(e){}
+			} catch(e){
+				//body = null;
+			}
 
 
 			if (receivedMessage.action == "broadcasting") {
+				recievedCallBack(body);
 				
 			}else if (receivedMessage.action == "SYNC_LIST"){
 				
-			}else {
+			}else if(receivedMessage.action =="SYNC"){
+				var objectKey=variables;
+				for (var i = GcObjectList.length - 1; i >= 0; i--) {
+					var gco=GcObjectList[i];
+					console.log("GCObject:"+gco.getkey()+" "+gco.getValue()+" compare:"+gco.getkey().toString());
+					if(gco.getkey()==objectKey){
+						gco.setValue(body);
+						gco.onUpdate(objectKey,body);
+					}
+				};
+
+			}
+			else {
 			}
 			
 		} catch(error) {
@@ -152,6 +176,10 @@ function GameCenter() {
 		var vars={key:listName,autoSync:true};
 		sendMessage("remove_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
+	this.removeListItemByIndex = function (listName,index){
+		var vars={key:listName,autoSync:true};
+		sendMessage("remove_list_item_by_index", JSON.stringify(vars), JSON.stringify(index));
+	}
 	this.getList =function(listName){
 		var vars={key:listName};
 		sendMessage("get_list", JSON.stringify(vars), "");
@@ -168,10 +196,66 @@ function GameCenter() {
 
 
 	var alreadySet = "0";
+
 	this.setUser = function(name, property) {
 
 		sendMessage("set_user", {}, {"name":name, "property":property});
 		sendMessage("create_list",{"key":"UserProperty", "autoSync":"true"},{});
 	}
+	
+
+	this.registerGcObject = function(key){
+		if(key!=null){
+			var obj= new GcObject(key);
+		//GcObjectList.push(obj);
+			return obj;
+		}
+		
+	}
+	this.returnObjList=function(){
+		return GcObjectList;
+	}
+
+	function GcObject(key,callBack){
+		GcObjectList.push(this);
+		var key;
+		var value;
+		this.onUpdate = function(){}
+		if(arguments.length==2){
+			key = key;
+			this.onUpdate = callBack();
+
+		}else if(arguments.length==1){
+			key=key;
+		}
+		
+		this.update=function(){
+			GcLib.getObject(key);
+			//return value;
+		}
+		this.set = function (obj){
+			GcLib.setObject(key,obj);
+			value=obj;
+		}
+
+		this.setValue = function(val){
+			value=val;
+		}
+		this.getValue = function(){
+			return value;
+		}
+
+		this.getkey=function(){
+			return key;
+		}
+		//callBack function
+		
+
+	}
+	function GcList(){
+
+	}
 
 }
+
+
