@@ -142,11 +142,15 @@ function GameCenter() {
 	}
 	this.appendList = function(listName, item){
 		var vars={key:listName,autoSync:true};
-		sendMessage("append_list_item", JSON.stringify(vars), JSON.stringify(item));
+		sendMessage("push_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
 	this.addListItem = function (listName,item){
-		var vars={key:listName,autoSync:true};
+		var vars={key:listName,index:0,autoSync:true};
 		sendMessage("add_list_item", JSON.stringify(vars), JSON.stringify(item));
+	}
+	this.removeListItem = function (listName,item){
+		var vars={key:listName,autoSync:true};
+		sendMessage("remove_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
 	this.getList =function(listName){
 		var vars={key:listName};
