@@ -111,11 +111,11 @@ function GameCenter() {
 			}else if(receivedMessage.action =="SYNC"){
 				var objectKey=variables;
 				for (var i = GcObjectList.length - 1; i >= 0; i--) {
-					var gco=GcObjectList[i];
-					console.log("GCObject:"+gco.getkey()+" "+gco.getValue()+" compare:"+gco.getkey().toString());
+					var gco = GcObjectList[i];
+					//console.log("GCObject:"+gco.getkey()+" "+gco.getValue()+" compare:"+gco.getkey().toString());
 					if(gco.getkey()==objectKey){
 						gco.setValue(body);
-						gco.onUpdate(objectKey,body);
+						//gco.onUpdate(objectKey,body);
 					}
 				};
 
@@ -220,20 +220,20 @@ function GameCenter() {
 		GcObjectList.push(this);
 		var key;
 		var value;
-		this.onUpdate = function(){}
+		this.onSync = function(){}
 		if(arguments.length==2){
 			key = key;
-			this.onUpdate = callBack();
+			this.onSync = callBack;
 
 		}else if(arguments.length==1){
 			key=key;
 		}
 		
-		this.update=function(){
+		this.sync =function(){
 			GcLib.getObject(key);
 			//return value;
 		}
-		this.set = function (obj){
+		this.submit = function (obj){
 			GcLib.setObject(key,obj);
 			value=obj;
 		}
@@ -245,14 +245,35 @@ function GameCenter() {
 			return value;
 		}
 
-		this.getkey=function(){
+		this.getKey=function(){
 			return key;
 		}
 		//callBack function
 		
 
 	}
-	function GcList(){
+	function GcList(key,callBack){
+		
+		this.onSync= function(){}
+		if(arguments.length==2){
+			key = key;
+			this.onSync = callBack();
+		}else if(arguments.length==1){
+			key=key;
+		}
+		this.sync = function() {
+
+		}
+		this.submit = function(){
+
+		}
+		this.pushBack = function (){
+
+		}
+
+
+
+
 
 	}
 
