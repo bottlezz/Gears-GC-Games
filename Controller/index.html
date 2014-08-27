@@ -1,0 +1,105 @@
+<html>
+	<head>
+		<style>
+			.ctrlPad {
+
+				width: 250px;
+				height: 250px;
+				border: 3px solid;
+				border-color: #555555;
+
+			}
+			.txtBlock {
+
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class = "txtBlock">
+			<p><label>x1:</label><span id="xcord1"></span></p>
+			<p><label>y1:</label><span id="ycord1"></span></p>
+
+			<p><label>x2:</label><span id="xcord2"></span></p>
+			<p><label>y2:</label><span id="ycord2"></span></p>
+
+
+			
+		</div>
+		<div class="ctrlPad" id='ctrl1'>
+		</div>
+		<div class="ctrlPad" id='ctrl2'>
+		</div>
+		<script type="text/javascript">
+			var xc1=document.getElementById("xcord1");
+			var yc1=document.getElementById("ycord1");
+
+			var xc2=document.getElementById("xcord2");
+			var yc2=document.getElementById("ycord2");
+
+			var c1 = document.getElementById('ctrl1');
+			var c2 = document.getElementById('ctrl2');
+
+			var c1Cord=getPosition(c1);
+			var c2Cord=getPosition(c2);
+			c1.addEventListener('touchmove', function(event) {
+				event.preventDefault();
+			  // If there's exactly one finger inside this element
+			  
+			    var touch = event.targetTouches[0];
+			    // Place element where the finger is
+			    xc1.innerHTML= touch.pageX -c1Cord.x;
+
+			    yc1.innerHTML = touch.pageY -c1Cord.y;
+			  
+			}, false);
+			c1.addEventListener('touchstart', function(event) {
+				event.preventDefault();
+			  // If there's exactly one finger inside this element
+			  
+			    var touch = event.targetTouches[0];
+			    // Place element where the finger is
+			    xc1.innerHTML= touch.pageX -c1Cord.x;
+
+			    yc1.innerHTML = touch.pageY -c1Cord.y;
+			  
+			}, false);
+			c2.addEventListener('touchmove', function(event) {
+				event.preventDefault();
+			  // If there's exactly one finger inside this element
+			  
+			    var touch = event.targetTouches[0];
+			    // Place element where the finger is
+			    xc2.innerHTML= touch.pageX -c2Cord.x;
+
+			    yc2.innerHTML = touch.pageY -c2Cord.y;
+			  
+			}, false);
+			c2.addEventListener('touchstart', function(event) {
+				event.preventDefault();
+			  // If there's exactly one finger inside this element
+			  
+			    var touch = event.targetTouches[0];
+			    // Place element where the finger is
+			    xc2.innerHTML= touch.pageX -c2Cord.x;
+
+			    yc2.innerHTML = touch.pageY -c2Cord.y;
+			  
+			}, false);
+
+			function getPosition(element) {
+			    var xPosition = 0;
+			    var yPosition = 0;
+			  
+			    while(element) {
+			        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+			        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+			        element = element.offsetParent;
+			    }
+			    return { x: xPosition, y: yPosition };
+			}
+
+		</script>
+	</body>
+
+</html>
