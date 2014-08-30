@@ -1,8 +1,13 @@
 <html>
 	<head>
 		<style>
+			body{
+					overflow: hidden;
+					margin:0px;
+					padding:0px;
+			}
 			.ctrlPadl {
-
+				margin:5px;
 				width: 250px;
 				height: 250px;
 				border: 3px solid;
@@ -11,6 +16,7 @@
 
 			}
 			.ctrlPadr {
+				margin:5px;
 
 				width: 250px;
 				height: 250px;
@@ -22,18 +28,32 @@
 			.txtBlock {
 
 			}
+
+			#view_OrientationCheck{
+				padding:0px;
+				margin:0px;
+				width:100%;
+				height:100%;
+				display:block;
+				position:absolute;
+				z-index:1000;
+				background-color:#aaaaaa;
+			}
+
 		</style>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+		<meta name=apple-mobile-web-app-capable content=yes>
+		<meta name=apple-mobile-web-app-status-bar-style content=black>
 		<script type="text/javascript" src="controller.js"></script>
+		<script type="text/javascript" src="gamecenter.js"></script>
 	</head>
 
 	<body>
+		<div id="view_OrientationCheck" >
+			<h2> Tilt to hrozental plz </h2>
+		</div>
 		<div class = "txtBlock">
-			<p><label>x1:</label><span id="xcord1"></span>
-			<label>y1:</label><span id="ycord1"></span></p>
 
-			<p><label>x2:</label><span id="xcord2"></span>
-			<label>y2:</label><span id="ycord2"></span></p>
 
 
 
@@ -43,89 +63,66 @@
 		<div class="ctrlPadr" id='ctrl2'>
 		</div>
 		<script type="text/javascript">
-		toggleFullScreen();
-			var xc1=document.getElementById("xcord1");
-			var yc1=document.getElementById("ycord1");
 
-			var xc2=document.getElementById("xcord2");
-			var yc2=document.getElementById("ycord2");
+
 
 			var c1 = document.getElementById('ctrl1');
 			var c2 = document.getElementById('ctrl2');
+			var view_check=document.getElementById('view_OrientationCheck');
+			var mql = window.matchMedia("(orientation: portrait)");
 
-			var cPad1= new ControllPad("ctrl1",function(x,y){
-				xc1.innerHTML = x;
-				yc1.innerHTML = y;
-
-			});
-			var cPad2= new ControllPad("ctrl2",function(x,y){
-				xc2.innerHTML = x;
-				yc2.innerHTML = y;
-
+			mql.addListener(function(m) {
+				orientationChange();
 			});
 
-			xc2.innerHTML=window.innerWidth;
-			yc2.innerHTML=window.innerHeight;
+			initControllers();
+			orientationChange();
+
+
+			var cPad1;
+			var cPad2;
+			var lastZone=0;
+			var connect=new GameCenter();
+			var guid=getGuid();
 			/*
-
-			var c1Cord=getPosition(c1);
-			var c2Cord=getPosition(c2);
-			c1.addEventListener('touchmove', function(event) {
-				event.preventDefault();
-			  // If there's exactly one finger inside this element
-
-			    var touch = event.targetTouches[0];
-			    // Place element where the finger is
-			    xc1.innerHTML= touch.pageX -c1Cord.x;
-
-			    yc1.innerHTML = touch.pageY -c1Cord.y;
-
-			}, false);
-			c1.addEventListener('touchstart', function(event) {
-				event.preventDefault();
-			  // If there's exactly one finger inside this element
-
-			    var touch = event.targetTouches[0];
-			    // Place element where the finger is
-			    xc1.innerHTML= touch.pageX -c1Cord.x;
-
-			    yc1.innerHTML = touch.pageY -c1Cord.y;
-
-			}, false);
-			c2.addEventListener('touchmove', function(event) {
-				event.preventDefault();
-			  // If there's exactly one finger inside this element
-
-			    var touch = event.targetTouches[0];
-			    // Place element where the finger is
-			    xc2.innerHTML= touch.pageX -c2Cord.x;
-
-			    yc2.innerHTML = touch.pageY -c2Cord.y;
-
-			}, false);
-			c2.addEventListener('touchstart', function(event) {
-				event.preventDefault();
-			  // If there's exactly one finger inside this element
-
-			    var touch = event.targetTouches[0];
-			    // Place element where the finger is
-			    xc2.innerHTML= touch.pageX -c2Cord.x;
-
-			    yc2.innerHTML = touch.pageY -c2Cord.y;
-
-			}, false);
-
-			function getPosition(element) {
-			    var xPosition = 0;
-			    var yPosition = 0;
-
-			    while(element) {
-			        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-			        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-			        element = element.offsetParent;
-			    }
-			    return { x: xPosition, y: yPosition };
+			connect.onConnect=function(){
+				connect.broadcast({action:"connect",guid:guid});
 			}*/
+
+			function touchOnCallBack(x,y){
+				var zone=computeZone(x,y);
+				if(zone!=lastZone){
+					lastZone=zone;
+					connect.broadcast({action:"keyDown",guid:guid,zone:zone});
+				}
+
+			}
+			function touchUpCallBack(){
+				lastZone=0;
+				connect.broadcast({action:"keyUp",guid:guid});
+			}
+			function initControllers(){
+			  cPad1= new ControllPad("ctrl1",touchOnCallBack,touchUpCallBack);
+			  //cPad2= new ControllPad("ctrl2",touchOnCallBack,touchUpCallBack);
+
+			}
+			function orientationChange(){
+				var mql = window.matchMedia("(orientation: portrait)");
+				if(mql.matches) {
+					// Portrait orientation
+					view_check.style.display = "block";
+				} else {
+					// Landscape orientation
+					view_check.style.display = "none";
+					initControllers();
+				}
+			};
+
+
+
+			var ctrlObj=connect.registerGcObject(guid);
+			ctrlObj.submit(Date.now());
+
 
 		</script>
 	</body>

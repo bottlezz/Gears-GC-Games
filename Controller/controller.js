@@ -1,16 +1,18 @@
 function ControllPad(id,callBack,endCallBack){
   var pad=document.getElementById(id);
   var padCord=getPosition(pad);
-  this.x=0;
-  this.y=0;
+  this.x=-1;
+  this.y=-1;
   var self=this;
   this.endCall=function(x,y){
-    console.log("Touch End:"+x+","+y);
+    x=-1;
+    y=-1;
+    if(typeof(endCallBack) !== 'undefined'){
+        endCallBack(x,y);
+    }
   };
 
-  if(typeof(endCallBack) !== 'undefined'){
-      this.endCall = endCallBack;
-  }
+
 
   pad.addEventListener('touchmove', function(event) {
     event.preventDefault();
@@ -65,4 +67,27 @@ function toggleFullScreen() {
   else {
     cancelFullScreen.call(doc);
   }
+}
+function getGuid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+               .toString(16)
+               .substring(1);
+  }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
+
+}
+function computeZone(x,y){
+  var x=x-125;
+  var y=y-125;
+  if(x<0 && (x*x>y*y))return 4;
+
+  if(x>0 && (x*x>y*y))return 2;
+
+  if(y>0 && (x*x<y*y)) return 1;
+
+  return 3;
+
+
 }

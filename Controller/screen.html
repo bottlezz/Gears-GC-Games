@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <script type="text/javascript" src="pixi.dev.js"></script>
+    <script type="text/javascript" src="gamecenter.js"></script>
+    <script type="text/javascript" src="screen.js"></script>
+  </head>
+  <body>
+    	<script>
+        var connect=new GameCenter();
+      	var stage = new PIXI.Stage();
+        var players = new Array();
+        var renderer = new PIXI.autoDetectRenderer(900, 600, null, true, true);
+        var speed = 0.2;
+        //var renderer = new PIXI.CanvasRenderer(1024, 768, null, true, true);
+        document.body.appendChild(renderer.view);
+
+        var imgUrl = 'bunny.png';
+        //var sprite = PIXI.Sprite.fromImage(imgUrl);
+      //  sprite.position.set(0, 0);
+      //  sprite.pivot.set(sprite.width/2, sprite.height/2);
+      //  stage.addChild(sprite);
+
+
+        requestAnimFrame(animate);
+        function animate() {
+            requestAnimFrame(animate);
+
+            //sprite.rotation += 0.1;
+            players.forEach(function(entry){
+              entry.update();
+            });
+
+            renderer.render(stage);
+        }
+
+        function removeUser(guid){
+          players.forEach(function(entry){
+            if(entry.guid==guid){
+              stage.removeChild(entry.sprite);
+            }
+          });
+          //stage.removeChild(sprite);
+        }
+
+        function addUser(guid){
+          user=new User(guid,null);
+          players.push(user);
+          stage.addChild(user.sprite);
+          return user;
+        }
+        function onBroadCast(obj){
+          var user=null;
+          for(var i=0;i<players.length;i++){
+            if(players[i].guid==obj.guid){
+              user=players[i];
+              break;
+            }
+          }
+          if(user==null){
+            user=addUser(obj.guid);
+          }
+          if(obj.action=="keyDown"){
+            user.stop();
+            switch(obj.zone){
+              case 1:
+                user.dy=speed;
+                break;
+              case 2:
+                user.dx=speed;
+                break;
+              case 3:
+                user.dy=0-speed;
+                break;
+              case 4:
+                user.dx=0-speed;
+                break;
+            }
+          }
+          if(obj.action=="keyUp"){
+            user.stop();
+
+          }
+          if(obj.action=="connect"){
+
+          }
+        };
+
+        var keepAliveCheck = setInterval(function(){
+          players.forEach(function(entry){
+            //connect.
+          });
+        },30000);
+
+        function User(guid,gcObj){
+          this.guid=guid;
+          this.gcObj=gcObj;
+          this.x=100;
+          this.y=100;
+          this.dx=0;
+          this.dy=0;
+          this.lastUpdate=Date.now();
+
+          this.sprite = PIXI.Sprite.fromImage(imgUrl);
+
+          this.sprite.position.set(100, 100);
+          this.sprite.pivot.set(this.sprite.width/2, this.sprite.height/2);
+          this.stop=function(){
+            this.dx=0;
+            this.dy=0;
+          }
+          this.update=function(){
+            var now=Date.now();
+            var time=now-this.lastUpdate;
+            this.lastUpdate=now;
+            this.x=this.x+time*this.dx;
+            this.y=this.y+time*this.dy;
+            this.sprite.position.set(this.x, this.y);
+
+          }
+
+
+        };
+
+
+
+     </script>
+  </body>
+
+</html>
