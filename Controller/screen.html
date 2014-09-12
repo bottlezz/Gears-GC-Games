@@ -11,15 +11,16 @@
         var players = new Array();
         var renderer = new PIXI.autoDetectRenderer(900, 600, null, true, true);
         var speed = 0.2;
+        var rotSpd = 0.05;
         //var renderer = new PIXI.CanvasRenderer(1024, 768, null, true, true);
         document.body.appendChild(renderer.view);
 
         var imgUrl = 'bunny.png';
         //var sprite = PIXI.Sprite.fromImage(imgUrl);
       //  sprite.position.set(0, 0);
-      //  sprite.pivot.set(sprite.width/2, sprite.height/2);
-      //  stage.addChild(sprite);
-
+       // sprite.pivot.set(sprite.width/2, sprite.height/2);
+       // stage.addChild(sprite);
+      
 
         requestAnimFrame(animate);
         function animate() {
@@ -60,21 +61,266 @@
             user=addUser(obj.guid);
           }
           if(obj.action=="keyDown"){
-            user.stop();
-            switch(obj.zone){
-              case 1:
-                user.dy=speed;
-                break;
-              case 2:
-                user.dx=speed;
-                break;
-              case 3:
-                user.dy=0-speed;
-                break;
-              case 4:
-                user.dx=0-speed;
-                break;
+            //user.stop();
+            var r=obj.rot+30;
+            if(r==60)r=0;
+            if (user.targetRot==r) {
+              return;
+            }else{
+
+              user.targetRot=r;
+
             }
+            //user.move();
+
+            
+            switch(r){
+              case 0:
+              user.dx=0;
+              user.dy=1;
+              break;
+              case 1:
+              user.dx=0.1;
+              user.dy=0.99;
+              break;
+              case 2:
+              user.dx=0.21;
+              user.dy=0.98;
+              break;
+              case 3:
+              user.dx=0.31;
+              user.dy=0.95;
+              break;
+              case 4:
+              user.dx=0.41;
+              user.dy=0.91;
+              break;
+              case 5:
+              user.dx=0.5;
+              user.dy=0.87;
+              break;
+              case 6:
+              user.dx=0.59;
+              user.dy=0.81;
+              break;
+              case 7:
+              user.dx=0.67;
+              user.dy=0.74;
+              break;
+              case 8:
+              user.dx=0.74;
+              user.dy=0.67;
+              break;
+              case 9:
+              user.dx=0.81;
+              user.dy=0.59;
+              break;
+              case 10:
+              user.dx=0.87;
+              user.dy=0.5;
+              break;
+              case 11:
+              user.dx=0.91;
+              user.dy=0.41;
+              break;
+              case 12:
+              user.dx=0.95;
+              user.dy=0.31;
+              break;
+              case 13:
+              user.dx=0.98;
+              user.dy=0.21;
+              break;
+              case 14:
+              user.dx=0.99;
+              user.dy=0.1;
+              break;
+              case 15:
+              user.dx=1;
+              user.dy=0;
+              break;
+              case 16:
+              user.dx=0.99;
+              user.dy=-0.1;
+              break;
+              case 17:
+              user.dx=0.98;
+              user.dy=-0.21;
+              break;
+              case 18:
+              user.dx=0.95;
+              user.dy=-0.31;
+              break;
+              case 19:
+              user.dx=0.91;
+              user.dy=-0.41;
+              break;
+              case 20:
+              user.dx=0.87;
+              user.dy=-0.5;
+              break;
+              case 21:
+              user.dx=0.81;
+              user.dy=-0.59;
+              break;
+              case 22:
+              user.dx=0.74;
+              user.dy=-0.67;
+              break;
+              case 23:
+              user.dx=0.67;
+              user.dy=-0.74;
+              break;
+              case 24:
+              user.dx=0.59;
+              user.dy=-0.81;
+              break;
+              case 25:
+              user.dx=0.5;
+              user.dy=-0.87;
+              break;
+              case 26:
+              user.dx=0.41;
+              user.dy=-0.91;
+              break;
+              case 27:
+              user.dx=0.31;
+              user.dy=-0.95;
+              break;
+              case 28:
+              user.dx=0.21;
+              user.dy=-0.98;
+              break;
+              case 29:
+              user.dx=0.1;
+              user.dy=-0.99;
+              break;
+              case 30:
+              user.dx=0;
+              user.dy=-1;
+              break;
+              case 31:
+              user.dx=-0.1;
+              user.dy=-0.99;
+              break;
+              case 32:
+              user.dx=-0.21;
+              user.dy=-0.98;
+              break;
+              case 33:
+              user.dx=-0.31;
+              user.dy=-0.95;
+              break;
+              case 34:
+              user.dx=-0.41;
+              user.dy=-0.91;
+              break;
+              case 35:
+              user.dx=-0.5;
+              user.dy=-0.87;
+              break;
+              case 36:
+              user.dx=-0.59;
+              user.dy=-0.81;
+              break;
+              case 37:
+              user.dx=-0.67;
+              user.dy=-0.74;
+              break;
+              case 38:
+              user.dx=-0.74;
+              user.dy=-0.67;
+              break;
+              case 39:
+              user.dx=-0.81;
+              user.dy=-0.59;
+              break;
+              case 40:
+              user.dx=-0.87;
+              user.dy=-0.5;
+              break;
+              case 41:
+              user.dx=-0.91;
+              user.dy=-0.41;
+              break;
+              case 42:
+              user.dx=-0.95;
+              user.dy=-0.31;
+              break;
+              case 43:
+              user.dx=-0.98;
+              user.dy=-0.21;
+              break;
+              case 44:
+              user.dx=-0.99;
+              user.dy=-0.1;
+              break;
+              case 45:
+              user.dx=-1;
+              user.dy=0;
+              break;
+              case 46:
+              user.dx=-0.99;
+              user.dy=0.1;
+              break;
+              case 47:
+              user.dx=-0.98;
+              user.dy=0.21;
+              break;
+              case 48:
+              user.dx=-0.95;
+              user.dy=0.31;
+              break;
+              case 49:
+              user.dx=-0.91;
+              user.dy=0.41;
+              break;
+              case 50:
+              user.dx=-0.87;
+              user.dy=0.5;
+              break;
+              case 51:
+              user.dx=-0.81;
+              user.dy=0.59;
+              break;
+              case 52:
+              user.dx=-0.74;
+              user.dy=0.67;
+              break;
+              case 53:
+              user.dx=-0.67;
+              user.dy=0.74;
+              break;
+              case 54:
+              user.dx=-0.59;
+              user.dy=0.81;
+              break;
+              case 55:
+              user.dx=-0.5;
+              user.dy=0.87;
+              break;
+              case 56:
+              user.dx=-0.41;
+              user.dy=0.91;
+              break;
+              case 57:
+              user.dx=-0.31;
+              user.dy=0.95;
+              break;
+              case 58:
+              user.dx=-0.21;
+              user.dy=0.98;
+              break;
+              case 59:
+              user.dx=-0.1;
+              user.dy=0.99;
+              break;
+              case 60:
+              user.dx=0;
+              user.dy=1;
+              break;
+            }
+            user.getDirection();
           }
           if(obj.action=="keyUp"){
             user.stop();
@@ -98,24 +344,63 @@
           this.y=100;
           this.dx=0;
           this.dy=0;
+          this.rot=30;
+          this.targetRot=0;
+          this.rotDir=0;
+          this.isStop=true;
+          this.canMove=false;
           this.lastUpdate=Date.now();
 
           this.sprite = PIXI.Sprite.fromImage(imgUrl);
 
           this.sprite.position.set(100, 100);
           this.sprite.pivot.set(this.sprite.width/2, this.sprite.height/2);
+          this.sprite.rotation = -this.rot*6*0.01745;
           this.stop=function(){
+            this.canMove=false;
             this.dx=0;
             this.dy=0;
           }
+        
           this.update=function(){
             var now=Date.now();
             var time=now-this.lastUpdate;
             this.lastUpdate=now;
-            this.x=this.x+time*this.dx;
-            this.y=this.y+time*this.dy;
-            this.sprite.position.set(this.x, this.y);
+            curRot=(this.rot);
+            curTarRot=(this.targetRot);
+            
+            if(curRot!=curTarRot){
+              this.canMove=false;
+              if(Math.abs(curRot-curTarRot)<1){
+                this.rot=this.targetRot;
+                this.rotDir=0;
+                this.canMove = true;
+              }else{
+                
+                //console.log(this.rot+' '+this.targetRot);
+                this.rot+=rotSpd*this.rotDir*time;
+                this.rot=(60+this.rot)%60;
+                
+              }
 
+            }
+
+            if(this.canMove){
+              this.x=this.x-time*this.dx*speed;
+              this.y=this.y-time*this.dy*speed;
+              this.sprite.position.set(this.x, this.y);
+            }
+
+            //console.log(time);
+            
+            this.sprite.rotation = -this.rot*6*0.01745;
+          }
+          this.getDirection=function(){
+            if((60+this.targetRot-this.rot)%60>30){
+              this.rotDir=-1;
+            }else{
+              this.rotDir=1;
+            }
           }
 
 
