@@ -341,7 +341,7 @@
         function User(guid,gcObj){
           this.guid=guid;
           this.gcObj=gcObj;
-          this.radius=15;
+          this.radius=30;
           this.lastX=100;
           this.lastY=100;
           this.x=100;
@@ -368,6 +368,7 @@
           this.reverseMove=function(){
             this.x=this.lastX;
             this.y=this.lastY;
+            this.sprite.position.set(this.x, this.y);
           }
         
           this.update=function(){
