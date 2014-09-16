@@ -9,18 +9,19 @@
         var connect=new GameCenter();
       	var stage = new PIXI.Stage();
         var players = new Array();
+        var bullets = new Array();
         var renderer = new PIXI.autoDetectRenderer(900, 600, null, true, true);
-        var speed = 0.2;
+        var speed = 0.15;
         var rotSpd = 0.05;
         //var renderer = new PIXI.CanvasRenderer(1024, 768, null, true, true);
         document.body.appendChild(renderer.view);
 
-        var imgUrl = 'bunny.png';
+
         //var sprite = PIXI.Sprite.fromImage(imgUrl);
       //  sprite.position.set(0, 0);
        // sprite.pivot.set(sprite.width/2, sprite.height/2);
        // stage.addChild(sprite);
-      
+
 
         requestAnimFrame(animate);
         function animate() {
@@ -29,6 +30,11 @@
             //sprite.rotation += 0.1;
             players.forEach(function(entry){
               entry.update();
+            });
+            bullets.forEach(function(entry){
+              if(entry.inStage==true){
+                entry.update();
+              }
             });
             colDetcUser(players);
 
@@ -47,9 +53,11 @@
         function addUser(guid){
           user=new User(guid,null);
           players.push(user);
+          user.resetPivot();
           stage.addChild(user.sprite);
           return user;
         }
+
         function onBroadCast(obj){
           var user=null;
           for(var i=0;i<players.length;i++){
@@ -63,6 +71,7 @@
           }
           if(obj.action=="keyDown"){
             //user.stop();
+            user.keyDown=true;
             var r=obj.rot+30;
             if(r==60)r=0;
             if (user.targetRot==r) {
@@ -71,10 +80,11 @@
 
               user.targetRot=r;
 
+
             }
             //user.move();
 
-            
+
             switch(r){
               case 0:
               user.dx=0;
@@ -330,6 +340,16 @@
           if(obj.action=="connect"){
 
           }
+          if(obj.action=="fireUp"){
+
+            for(var i=0;i<players.length;i++){
+              if(players[i].guid==obj.guid){
+                var bul = new Bullet();
+                bul.addToStage(players[i]);
+                bullets.push(bul);
+              }
+            }
+          }
         };
 
         var keepAliveCheck = setInterval(function(){
@@ -337,6 +357,45 @@
             //connect.
           });
         },30000);
+        function Bullet(){
+          this.radius=5;
+          this.imgUrl='Dot0.png';
+          this.sprite = PIXI.Sprite.fromImage(this.imgUrl);
+          this.lastX=100;
+          this.lastY=100;
+          this.x=100;
+          this.y=100;
+          this.dx=0;
+          this.dy=0;
+          this.speed=0.3;
+          this.lastUpdate=Date.now();
+          this.inStage=false;
+          this.addToStage=function(user){
+            this.x=user.x-user.radius*user.dx+this.radius-1;
+            this.y=user.y-user.radius*user.dy+this.radius-1;
+            this.dx=user.dx;
+            this.dy=user.dy;
+            this.sprite.position.set(this.x, this.y);
+            this.sprite.pivot.set(this.sprite.width/2, this.sprite.height/2);
+            this.lastUpdate=Date.now();
+            this.inStage=true;
+            this.sprite.position.set(this.x, this.y);
+            stage.addChild(this.sprite);
+          }
+          this.update=function(){
+            var now=Date.now();
+            var time=now-this.lastUpdate;
+            this.lastUpdate=now;
+            this.x=this.x-time*this.dx*this.speed;
+            this.y=this.y-time*this.dy*this.speed;
+            this.sprite.position.set(this.x, this.y);
+            if(this.x>1000||this.x<0||this.y>1000||this.y<0){
+              stage.removeChild(this.sprite);
+              this.inStage=false;
+            }
+
+          }
+        }
 
         function User(guid,gcObj){
           this.guid=guid;
@@ -353,31 +412,37 @@
           this.rotDir=0;
           this.isStop=true;
           this.canMove=false;
+          this.keyDown=false;
           this.lastUpdate=Date.now();
+          this.imgUrl = 'bunny.png';
 
-          this.sprite = PIXI.Sprite.fromImage(imgUrl);
+          this.sprite = PIXI.Sprite.fromImage(this.imgUrl);
 
           this.sprite.position.set(100, 100);
           this.sprite.pivot.set(this.sprite.width/2, this.sprite.height/2);
           this.sprite.rotation = -this.rot*6*0.01745;
           this.stop=function(){
-            this.canMove=false;
-            this.dx=0;
-            this.dy=0;
+            this.keyDown=false;
+            //this.dx=0;
+            //this.dy=0;
+            this.resetPivot();
+          }
+          this.resetPivot=function(){
+            this.sprite.pivot.set(this.sprite.width/2, this.sprite.height/2);
           }
           this.reverseMove=function(){
             this.x=this.lastX;
             this.y=this.lastY;
             this.sprite.position.set(this.x, this.y);
           }
-        
+
           this.update=function(){
             var now=Date.now();
             var time=now-this.lastUpdate;
             this.lastUpdate=now;
             curRot=(this.rot);
             curTarRot=(this.targetRot);
-            
+
             if(curRot!=curTarRot){
               this.canMove=false;
               if(Math.abs(curRot-curTarRot)<1){
@@ -385,16 +450,16 @@
                 this.rotDir=0;
                 this.canMove = true;
               }else{
-                
+
                 //console.log(this.rot+' '+this.targetRot);
                 this.rot+=rotSpd*this.rotDir*time;
                 this.rot=(60+this.rot)%60;
-                
+
               }
 
             }
 
-            if(this.canMove){
+            if(this.canMove&&this.keyDown){
               this.lastX=this.x;
               this.lastY=this.y;
               this.x=this.x-time*this.dx*speed;
@@ -403,7 +468,7 @@
             }
 
             //console.log(time);
-            
+
             this.sprite.rotation = -this.rot*6*0.01745;
           }
           this.getDirection=function(){

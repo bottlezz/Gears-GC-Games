@@ -8,11 +8,23 @@ function colDetcUser(users){
 			if(Math.sqrt(dx)+Math.sqrt(dy)<Math.sqrt(dist)){
 				users[i].reverseMove();
 				users[j].reverseMove();
-	
+
 			}else{
-			
+
 			}
 		}
 	}
 }
-
+function colDetcBulletOnUsers(bullets,users,onHitCallBack){
+	//onHitCallBack=function(user,bullet)
+	bullets.forEach(function(b){
+		users.forEach(function(u){
+			var dx=u.x-b.x;
+			var dy=u.y-b.y;
+			var dist=u.radius+b.radius;
+			if(Math.sqrt(dx)+Math.sqrt(dy)<Math.sqrt(dist)){
+				onHitCallBack(u,b);
+			}
+		})
+	});
+}

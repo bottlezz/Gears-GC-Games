@@ -1,17 +1,11 @@
-function ControllPad(id,callBack,endCallBack){
+function ControlPad(id,callBack,endCallBack){
   var pad=document.getElementById(id);
   var padCord=getPosition(pad);
   this.x=-1;
   this.y=-1;
   this.rot=-1;
   var self=this;
-  this.endCall=function(x,y){
-    x=-1;
-    y=-1;
-    if(typeof(endCallBack) !== 'undefined'){
-        endCallBack(x,y);
-    }
-  };
+
 
 
 
@@ -30,23 +24,30 @@ function ControllPad(id,callBack,endCallBack){
     self.x = touch.pageX -padCord.x;
     self.y = touch.pageY -padCord.y;
 
-    callBack(self.x,self.y);;
+    callBack(self.x,self.y);
   }, false);
 
   pad.addEventListener('touchend', function(event) {
     event.preventDefault();
 
-//console.log(event.targetTouches);
     endCallBack(self.x,self.y);
   }, false);
 
 
-}
+};
+function TouchPad(id,touchCallBack){
+  var pad=document.getElementById(id);
+  pad.addEventListener('touchstart', function(event) {
+    event.preventDefault();
+    touchCallBack();
+  });
+};
 function getRot(x,y){
   var x=x-125;
   var y=y-125;
   return Math.round(Math.atan2(x, y)*57.3/6);
 }
+
 
 
 function getPosition(element) {
@@ -82,18 +83,5 @@ function getGuid() {
   }
 
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
-
-}
-function computeZone(x,y){
-  var x=x-125;
-  var y=y-125;
-  if(x<0 && (x*x>y*y))return 4;
-
-  if(x>0 && (x*x>y*y))return 2;
-
-  if(y>0 && (x*x<y*y)) return 1;
-
-  return 3;
-
 
 }
