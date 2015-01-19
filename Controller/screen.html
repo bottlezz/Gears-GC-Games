@@ -10,7 +10,7 @@
       	var stage = new PIXI.Stage();
         var players = new Array();
         var bullets = new Array();
-        var renderer = new PIXI.autoDetectRenderer(900, 600, null, true, true);
+        var renderer = new PIXI.autoDetectRenderer(800, 600, null, true, true);
         var speed = 0.15;
         var rotSpd = 0.05;
         //var renderer = new PIXI.CanvasRenderer(1024, 768, null, true, true);
@@ -41,9 +41,15 @@
 
             renderer.render(stage);
         }
-        function onHitCallback(x,y){
-          console.log("hit");
-          //return;
+        function onHitCallback(u,b){
+          u.hitPoint-=b.power;
+          u.healthBar.clear();
+          u.healthBar.beginFill(0xFFFF00);
+
+// set the line style to have a width of 5 and set the color to red
+u.healthBar.lineStyle(5, 0xFF0000);
+
+          u.healthBar.drawRect(0, 10, 30*u.hitPoint/100,5);
         }
 
         function removeUser(guid){
@@ -398,6 +404,7 @@
           this.speed=0.3;
           this.lastUpdate=Date.now();
           this.inStage=false;
+          this.power=10;
           this.addToStage=function(user){
             this.x=user.x-(user.radius+this.radius+1)*user.dx;
             this.y=user.y-(user.radius+this.radius+1)*user.dy;
@@ -430,6 +437,8 @@
         }
 
         function User(guid,gcObj){
+          this.hitPoint=100;
+
           this.guid=guid;
           this.gcObj=gcObj;
           this.radius=13;
@@ -446,9 +455,21 @@
           this.canMove=false;
           this.keyDown=false;
           this.lastUpdate=Date.now();
-          this.imgUrl = 'bunny.png';
+          this.imgUrl = 'tank_base.png';
 
           this.sprite = PIXI.Sprite.fromImage(this.imgUrl);
+          this.healthBar = new PIXI.Graphics();
+
+this.healthBar.beginFill(0xFFFF00);
+
+// set the line style to have a width of 5 and set the color to red
+this.healthBar.lineStyle(5, 0xFF0000);
+
+// draw a rectangle
+this.healthBar.drawRect(0, 10, 30,5);
+
+
+          this.sprite.addChild(this.healthBar);
 
           this.sprite.position.set(this.x, this.y);
           this.sprite.pivot.set(this.sprite.width/2, this.sprite.height/2);
