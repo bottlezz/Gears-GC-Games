@@ -10,6 +10,7 @@ function GameCenter() {
 	var wsPort;
 
 	var ID;
+	var connected=false;
 	//var mazeID;
 	var connection;
 	var GcObjectList;
@@ -57,12 +58,14 @@ function GameCenter() {
 	//initial connection sequence
 	var onConnection = function() {
 		console.log("connected");
+		connected=true;
 		//this.onConnect();
 		// sendOut(gameStateObject);
 	}
 
 	var onCloseEvent = function() {
 		console.log("closing");
+		connected=false;
 	}
 
 	var receiveMessage = function(message) {

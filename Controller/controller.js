@@ -1,3 +1,8 @@
+///
+///Class Controll pad 
+///
+///
+
 function ControllPad(id,callBack,endCallBack){
   var pad=document.getElementById(id);
   var padCord=getPosition(pad);
@@ -8,12 +13,9 @@ function ControllPad(id,callBack,endCallBack){
     x=-1;
     y=-1;
     if(typeof(endCallBack) !== 'undefined'){
-        endCallBack(x,y);
+      endCallBack(x,y);
     }
   };
-
-
-
   pad.addEventListener('touchmove', function(event) {
     event.preventDefault();
     var touch = event.targetTouches[0];
@@ -44,15 +46,15 @@ function ControllPad(id,callBack,endCallBack){
 
 
 function getPosition(element) {
-    var xPosition = 0;
-    var yPosition = 0;
+  var xPosition = 0;
+  var yPosition = 0;
 
-    while(element) {
-        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-        element = element.offsetParent;
-    }
-    return { x: xPosition, y: yPosition };
+  while(element) {
+    xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+    yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+    element = element.offsetParent;
+  }
+  return { x: xPosition, y: yPosition };
 }
 function toggleFullScreen() {
   var doc = window.document;
@@ -71,12 +73,10 @@ function toggleFullScreen() {
 function getGuid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
+    .toString(16)
+    .substring(1);
   }
-
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
-
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
 }
 function computeZone(x,y){
   var x=x-125;

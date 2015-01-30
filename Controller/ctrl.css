@@ -1,0 +1,40 @@
+body{
+	overflow: hidden;
+	margin:0px;
+	padding:0px;
+}
+.ctrlPadl {
+	margin:5px;
+	width: 200;
+	height: 200px;
+	border: 3px solid;
+	border-color: #555555;
+	float:left;
+	background-image: url("circle.jpg");
+	background-size: 100%;
+
+}
+.ctrlPadr {
+	margin:5px;
+
+	width: 200px;
+	height: 200px;
+	border: 3px solid;
+	border-color: #555555;
+	float:right;
+
+}
+.txtBlock {
+
+}
+
+#view_OrientationCheck{
+	padding:0px;
+	margin:0px;
+	width:100%;
+	height:100%;
+	display:block;
+	position:absolute;
+	z-index:1000;
+	background-color:#aaaaaa;
+}
