@@ -5,10 +5,6 @@ function ControlPad(id,callBack,endCallBack){
   this.y=-1;
   this.rot=-1;
   var self=this;
-
-
-
-
   pad.addEventListener('touchmove', function(event) {
     event.preventDefault();
     var touch = event.targetTouches[0];
@@ -42,9 +38,10 @@ function TouchPad(id,touchCallBack){
     touchCallBack();
   });
 };
-function getRot(x,y){
-  var x=x-125;
-  var y=y-125;
+function getRot(x,y,orignx,origny){
+  //orignx and origny is the center of div
+  var x=x-orignx;
+  var y=y-origny;
   return Math.round(Math.atan2(x, y)*57.3/6);
 }
 
@@ -74,14 +71,4 @@ function toggleFullScreen() {
   else {
     cancelFullScreen.call(doc);
   }
-}
-function getGuid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  }
-
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
-
 }

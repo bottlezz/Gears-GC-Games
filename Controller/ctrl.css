@@ -3,31 +3,69 @@ body{
 	margin:0px;
 	padding:0px;
 }
-.ctrlPadl {
+.ctrlPad{
 	margin:5px;
-	width: 200;
+	width: 48%;
 	height: 200px;
 	border: 3px solid;
 	border-color: #555555;
+}
+
+.ctrlPadl {
+	margin:0px;
+	width: 48%;
+	height: 90%;
+	border: 0px solid;
+	border-color: #555555;
 	float:left;
-	background-image: url("circle.jpg");
+	
 	background-size: 100%;
+	position:relative;
 
 }
 .ctrlPadr {
-	margin:5px;
+	margin:0px;
 
-	width: 200px;
-	height: 200px;
-	border: 3px solid;
+	width: 48%;
+
+	height: 90%;
+	border: 1px solid;
 	border-color: #555555;
 	float:right;
+	position:relative;
 
+}
+.buttonBase{
+	width: 75%;
+	
+	margin: 0, auto;
+	background-image: url("aSBgImg.png");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
+	position:absolute; 
+	bottom:0;
+}
+.buttonBase-right{
+	right:0;
+}
+#analogStick{
+	width: 20%;
+	position: :relative;
+	
+	background-image: url("aSThumbImg.png");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
 }
 .txtBlock {
 
 }
 
+.screen{
+	position: absolute;
+	
+}
 #view_OrientationCheck{
 	padding:0px;
 	margin:0px;

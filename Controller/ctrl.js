@@ -1,7 +1,4 @@
 
-
-
-
 var view_check=document.getElementById('view_OrientationCheck');
 var socketSupport=document.getElementById("SupportFailMessage");
 var mql = window.matchMedia("(orientation: portrait)");
@@ -23,16 +20,27 @@ if (window.MozWebSocket) {
     
 }
 */
+var windowWidth=$(window).width()>$(window).height()?$(window).width():$(window).height();
+var windowHeight=$(window).width()<$(window).height()?$(window).width():$(window).height()
+$("#controlPannel").width(windowWidth);
+$("#controlPannel").height(windowHeight-20);
 var cPad1;
 var cPad2;
 var lastRot=360;
 var currentRot=0;
 var lastRotUpdate=0;//for checking if anychanges in the interval
-var connect=new GameCenter();
+
+var service=new ClientService();
+
+service.init();
+//var connect=new GameCenter();
 var guid=getGuid();
 var fired=false;
 var ctrlStatus=0;
-
+var ctrlPadDeltaX=$(".buttonBase").width()/2;
+var ctrlPadDeltaY=$(".ctrlPadl").height()-$(".buttonBase").width()/2;
+var analogStickWidth=$(".ctrlPadl").width()*0.2;
+var analogStickRangeRadius=$(".ctrlPadl").width()*0.15;
 
 function initControllers(){
 	cPad1= new ControlPad("ctrl1",touchOnCallBack,touchUpCallBack);
@@ -40,11 +48,18 @@ function initControllers(){
 
 }
 
+var cw = $('.buttonBase').width();
+$('.buttonBase').css({'height':cw+'px'});
+
+var cw = $('#analogStick').width();
+$('#analogStick').css({'height':cw+'px'});
+resetAnalogStickPosition();
 var stopCheck;
 function bulletFire(){
 	if(!fired){
 		fired = true;
-		connect.broadcast({action:"fireUp",guid:guid,rot:currentRot});
+		//connect.broadcast({action:"fireUp",guid:guid,rot:currentRot});
+		service.sendBulletFire(currentRot);
 		setTimeout(function(){
 			fired=false;
 		},600)
@@ -53,10 +68,8 @@ function bulletFire(){
 
 function touchOnCallBack(x,y){
 	ctrlStatus=1;
-	var rot=getRot(x,y);
+	var rot=getRot(x,y,ctrlPadDeltaX,ctrlPadDeltaY);
 	currentRot=rot;
-
-
 }
 function touchUpCallBack(){
 	ctrlStatus=2;
@@ -74,10 +87,18 @@ function orientationChange(){
 	}
 };
 
-
+function updateAnalogStickPosition(r){
+	$('#analogStick').offset({
+		left:ctrlPadDeltaX- analogStickWidth/2 +Math.sin(Math.PI*r/30)*analogStickRangeRadius, 
+		top:ctrlPadDeltaY- analogStickWidth/2+Math.cos(Math.PI*r/30)*analogStickRangeRadius
+	});
+}
+function resetAnalogStickPosition(){
+	$('#analogStick').offset({left:ctrlPadDeltaX- analogStickWidth/2, top:ctrlPadDeltaY- analogStickWidth/2});
+	//$('#analogStick').top();
+}
 /*
-var ctrlObj=connect.registerGcObject(guid);
-ctrlObj.submit(Date.now());
+
 */
 var go=setInterval(function(){
 	switch(ctrlStatus){
@@ -88,13 +109,17 @@ var go=setInterval(function(){
 		{
 			if (currentRot!=lastRotUpdate) {
 				lastRotUpdate=currentRot;
-				connect.broadcast({action:"keyDown",guid:guid,rot:currentRot});
+				//connect.broadcast({action:"keyDown",guid:guid,rot:currentRot});
+				service.sendMoveStart(currentRot);
+				updateAnalogStickPosition(currentRot);
 			};
 		}
 		lastRot=currentRot;
 		break;
 		case 2:
-		connect.broadcast({action:"keyUp",guid:guid,rot:lastRot});
+		resetAnalogStickPosition();
+		//connect.broadcast({action:"keyUp",guid:guid,rot:lastRot});
+		service.sendMoveStop(lastRot);
 		lastRot=360;
 		lastRotUpdate=360;
 		ctrlStatus=0;
@@ -103,6 +128,5 @@ var go=setInterval(function(){
 
 
 
-},20);
+},40);
 
-//setControllerResponseRate();
