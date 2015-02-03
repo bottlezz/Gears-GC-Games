@@ -39,7 +39,7 @@ body{
 	width: 75%;
 	
 	margin: 0, auto;
-	background-image: url("aSBgImg.png");
+	background-image: url("../img/aSBgImg.png");
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -50,10 +50,10 @@ body{
 	right:0;
 }
 #analogStick{
-	width: 20%;
+	width: 30%;
 	position: :relative;
 	
-	background-image: url("aSThumbImg.png");
+	background-image: url("../img/aSThumbImg.png");
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center center;

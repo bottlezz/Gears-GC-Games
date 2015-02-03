@@ -39,7 +39,7 @@ var fired=false;
 var ctrlStatus=0;
 var ctrlPadDeltaX=$(".buttonBase").width()/2;
 var ctrlPadDeltaY=$(".ctrlPadl").height()-$(".buttonBase").width()/2;
-var analogStickWidth=$(".ctrlPadl").width()*0.2;
+var analogStickWidth=$(".ctrlPadl").width()*0.3;
 var analogStickRangeRadius=$(".ctrlPadl").width()*0.15;
 
 function initControllers(){
@@ -67,9 +67,15 @@ function bulletFire(){
 }
 
 function touchOnCallBack(x,y){
-	ctrlStatus=1;
+	
 	var rot=getRot(x,y,ctrlPadDeltaX,ctrlPadDeltaY);
 	currentRot=rot;
+	if(ctrlStatus==0){
+		service.sendMoveStart(currentRot);
+		lastRotUpdate=currentRot;
+	}
+	ctrlStatus=1;
+	updateAnalogStickPosition(currentRot);
 }
 function touchUpCallBack(){
 	ctrlStatus=2;
@@ -105,13 +111,13 @@ var go=setInterval(function(){
 		case 0:
 		break;
 		case 1:
-		if(Math.abs(lastRot-currentRot)<2)
+		if(Math.abs(lastRot-currentRot)<1)
 		{
 			if (currentRot!=lastRotUpdate) {
-				lastRotUpdate=currentRot;
-				//connect.broadcast({action:"keyDown",guid:guid,rot:currentRot});
+				
 				service.sendMoveStart(currentRot);
-				updateAnalogStickPosition(currentRot);
+				lastRotUpdate=currentRot;
+				
 			};
 		}
 		lastRot=currentRot;
@@ -128,5 +134,5 @@ var go=setInterval(function(){
 
 
 
-},40);
+},20);
 

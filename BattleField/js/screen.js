@@ -72,7 +72,7 @@ function addUser(guid){
   return user;
 }
 function addBackGround(){
-  var backgroundSprite= PIXI.Sprite.fromImage('gregmap.png');
+  var backgroundSprite= PIXI.Sprite.fromImage('../img/gregmap.png');
   stage.addChild(backgroundSprite);
 }
 function onBroadCast(obj){
@@ -380,8 +380,9 @@ var keepAliveCheck = setInterval(function(){
 },30000);
 ///Class for bullet
 function Bullet(){
+  this.margin=3
   this.radius=5;
-  this.imgUrl='Dot0.png';
+  this.imgUrl='../img/Dot0.png';
   this.sprite = PIXI.Sprite.fromImage(this.imgUrl);
   this.lastX=100;
   this.lastY=100;
@@ -394,8 +395,8 @@ function Bullet(){
   this.inStage=false;
   this.power=10;
   this.addToStage=function(user){
-    this.x=user.x-(user.radius+this.radius+1)*user.dx;
-    this.y=user.y-(user.radius+this.radius+1)*user.dy;
+    this.x=user.x-(user.radius+this.radius+this.margin)*user.dx;
+    this.y=user.y-(user.radius+this.radius+this.margin)*user.dy;
     this.dx=user.dx;
     this.dy=user.dy;
     this.sprite.position.set(this.x, this.y);
@@ -447,7 +448,7 @@ function User(guid,gcObj){
   this.keyDown=false;
   this.lastUpdate=Date.now();
   //this.imgUrl = 'tank_base.png';
-  this.imgUrl = 'robber3.png'
+  this.imgUrl = '../img/robber3.png'
   this.sprite = PIXI.Sprite.fromImage(this.imgUrl);
   this.healthBar = new PIXI.Graphics();  
 
