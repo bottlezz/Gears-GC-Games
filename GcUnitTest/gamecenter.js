@@ -5,18 +5,16 @@
 	//init objects
 	// var recievedObject;	  // recieved json object
 
-function GameCenter() {
-
-	var wsPort;
-
-	var ID;
-	//var mazeID;
-	var connection;
-	var GcObjectList;
-	var GcLib=this;
+function GameCenter(port) {
+	console.log(this);
+	this.wsPort= port==null?"50000":port.toString();
+	this.ip="127.0.0.1";
+	this.connected=false;
+	this.onConnect=function(){};
 
 	//to close connection connection.close();
-	(this.initial = function() {
+	this.init = function() {
+		console.log(this);
 		console.log("loading!");
 		//check preconditions for web socket support
 		if (window.MozWebSocket) {
@@ -24,46 +22,51 @@ function GameCenter() {
 	        console.log('using MozillaWebSocket');
 	        window.WebSocket = window.MozWebSocket;
 	    } else if (!window.WebSocket) {
-	    	
+
 	        console.log('browser does not support websockets!');
-	        alert('browser does not support websockets!');
+	        //alert('browser does not support websockets!');
 	        return;
 	    }
 
-		wsPort = "8081";
+		
 		var matches = document.URL.match(/http:\/\/([\d.]+)[\/:].*/);
-        //var ip = matches[1];
-        var ip="localhost";
-        console.log("IP: " + ip);
+        this.ip = matches[1];
+        //var ip="localhost";
+        console.log("IP: " + this.ip);
 
-        GcObjectList=new Array();
-        
-		connection = new WebSocket("ws://" + ip + ":" + wsPort);
+        this.GcObjectList=new Array();
 
-		connection.onopen = function(event) { onConnection() };
-		connection.onerror = function(error) { connectionError(error) };
-		connection.onmessage = function(message) { receiveMessage(message) };
-		connection.onclose = function(event) { onCloseEvent() };
-	})();
+		this.connection = new WebSocket("ws://" + this.ip + ":" + this.wsPort);
+		this.connection.GcLib=this;
+
+		this.connection.onopen = function(event) { this.GcLib.onConnection() };
+		this.connection.onerror = function(error) { this.GcLib.connectionError(error) };
+		this.connection.onmessage = function(message) { this.GcLib.receiveMessage(message) };
+		this.connection.onclose = function(event) { this.GcLib.onCloseEvent() };
+	};
+	this.init();
 
 	//connection error handling
-	var connectionError = function(error) {
+	this.connectionError = function(error) {
 		console.log("connection error: " + error);
-		alert(error);
-		document.getElementById('test').innerHTML = error;
+		//alert(error);
+		//document.getElementById('test').innerHTML = error;
 	}
 
 	//initial connection sequence
-	var onConnection = function() {
+	this.onConnection = function() {
 		console.log("connected");
+		this.connected=true;
+		//this.onConnect();
 		// sendOut(gameStateObject);
 	}
 
-	var onCloseEvent = function() {
+	this.onCloseEvent = function() {
 		console.log("closing");
+		connected=false;
 	}
 
-	var receiveMessage = function(message) {
+	this.receiveMessage = function(message) {
 		//convert JSON
 		console.log(message);
 
@@ -72,28 +75,28 @@ function GameCenter() {
 
 			console.log("Recevied Message " + receivedMessage);
 
-			console.log("Received action " + receivedMessage.action 
+			console.log("Received action " + receivedMessage.action
 						+ " (" + typeof receivedMessage.action + ")");
 
-			console.log("Received variables " + receivedMessage.variables 
+			console.log("Received variables " + receivedMessage.variables
 						+ " (" + typeof receivedMessage.variables + ")");
 			var variables = receivedMessage.variables;
 			try{
 				variables = JSON.parse(variables);
-				console.log("Parsed variables " + variables 
+				console.log("Parsed variables " + variables
 						+ " (" + typeof variables + ")");
 			} catch(e){
 				//variables = null;
 			}
 
-			console.log("Received timestamp " + receivedMessage.timestamp 
+			console.log("Received timestamp " + receivedMessage.timestamp
 						+ " (" + typeof receivedMessage.timestamp + ")");
 
-			console.log("Received body " + receivedMessage.body 
+			console.log("Received body " + receivedMessage.body
 						+ " (" + typeof receivedMessage.body + ")");
 
 			var body = receivedMessage.body;
-			
+
 			try{
 				body = JSON.parse(body);
 				console.log("Parsed body " + body
@@ -104,31 +107,44 @@ function GameCenter() {
 
 
 			if (receivedMessage.action == "broadcasting") {
-				recievedCallBack(body);
-				
+				onBroadCast(body);
+
 			}else if (receivedMessage.action == "SYNC_LIST"){
-				
+
 			}else if(receivedMessage.action =="SYNC"){
 				var objectKey=variables;
-				for (var i = GcObjectList.length - 1; i >= 0; i--) {
-					var gco = GcObjectList[i];
+				/*
+				console.log(objectKey);
+				for (var i = this.GcObjectList.length - 1; i >= 0; i--) {
+					var gco = this.GcObjectList[i];
 					//console.log("GCObject:"+gco.getkey()+" "+gco.getValue()+" compare:"+gco.getkey().toString());
 					if(gco.getkey()==objectKey){
 						gco.setValue(body);
 						//gco.onUpdate(objectKey,body);
 					}
-				};
+				};*/
+				var gcObj=this.getGcObject(objectKey);
+				if(gcObj!=null){
+					console.log("not null");
+					gcObj.setValue(body)
+				}
 
 			}
 			else {
 			}
-			
+
 		} catch(error) {
 			console.log('message is not a JSON object' + error);
 		}
+	};
+	this.getGcObject=function(key){
+		for (var i = this.GcObjectList.length - 1; i >= 0; i--) {
+			if( this.GcObjectList[i].key==key){
+				return this.GcObjectList[i];
+			}
+		}
 	}
-
-	var sendMessage = function(action, variables, body) {
+	this.sendMessage = function(action, variables, body) {
 		//UNIX time stamp
 		var timestamp = Math.round(new Date().getTime() / 1000)
 		if(typeof variables != 'string'){
@@ -142,11 +158,11 @@ function GameCenter() {
 			"action": action,
 			"variables": variables,
 			"timestamp": timestamp,
-			"body": body 
+			"body": body
 		}
 
-		if(connection.readyState == 1) {
-			connection.send(JSON.stringify(message));
+		if(this.connection.readyState == 1) {
+			this.connection.send(JSON.stringify(message));
 			console.log(JSON.stringify(message));
 		} else {
 			console.log("connection not ready!");
@@ -154,44 +170,44 @@ function GameCenter() {
 		console.log("SENT");
 	}
 
-	this.broadcasting = function(body) {
-		sendMessage("broadcasting", "message", body);
+	this.broadcast= function(body) {
+		this.sendMessage("broadcasting", "message", body);
 	}
 
 	this.createList = function(listName){
 
 		var vars={key:listName,autoSync:true};
-		sendMessage("create_list", JSON.stringify(vars), "");
+		this.sendMessage("create_list", JSON.stringify(vars), "");
 		//sendMessage("create_list",'{"key":"UserProperty", "autoSync":"true"}',"");
 	}
 	this.appendList = function(listName, item){
 		var vars={key:listName,autoSync:true};
-		sendMessage("push_list_item", JSON.stringify(vars), JSON.stringify(item));
+		this.sendMessage("push_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
 	this.addListItem = function (listName,item){
 		var vars={key:listName,index:0,autoSync:true};
-		sendMessage("add_list_item", JSON.stringify(vars), JSON.stringify(item));
+		this.sendMessage("add_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
 	this.removeListItem = function (listName,item){
 		var vars={key:listName,autoSync:true};
-		sendMessage("remove_list_item", JSON.stringify(vars), JSON.stringify(item));
+		this.sendMessage("remove_list_item", JSON.stringify(vars), JSON.stringify(item));
 	}
 	this.removeListItemByIndex = function (listName,index){
 		var vars={key:listName,autoSync:true};
-		sendMessage("remove_list_item_by_index", JSON.stringify(vars), JSON.stringify(index));
+		this.sendMessage("remove_list_item_by_index", JSON.stringify(vars), JSON.stringify(index));
 	}
 	this.getList =function(listName){
 		var vars={key:listName};
-		sendMessage("get_list", JSON.stringify(vars), "");
+		this.sendMessage("get_list", JSON.stringify(vars), "");
 	}
 	this.setObject=function(key,obj){
 		var vars={key:key,autoSync:true};
-		sendMessage("set_object", JSON.stringify(vars), JSON.stringify(obj));
+		this.sendMessage("set_object", JSON.stringify(vars), JSON.stringify(obj));
 	}
 	this.getObject=function(key){
 		var vars={key:key};
 
-		sendMessage("get_object", JSON.stringify(vars), null);
+		this.sendMessage("get_object", JSON.stringify(vars), null);
 	}
 
 
@@ -199,61 +215,62 @@ function GameCenter() {
 
 	this.setUser = function(name, property) {
 
-		sendMessage("set_user", {}, {"name":name, "property":property});
-		sendMessage("create_list",{"key":"UserProperty", "autoSync":"true"},{});
+		this.sendMessage("set_user", {}, {"name":name, "property":property});
+		this.sendMessage("create_list",{"key":"UserProperty", "autoSync":"true"},{});
 	}
-	
 
-	this.registerGcObject = function(key){
+
+	this.registerGcObject = function(key,callBack){
+
 		if(key!=null){
-			var obj= new GcObject(key);
-		//GcObjectList.push(obj);
+			var obj=this.getGcObject(key);
+			if(obj!=null){
+				return obj;
+			}
+			obj= new GcObject(key,this);
+			this.GcObjectList.push(obj);
 			return obj;
 		}
-		
+
 	}
 	this.returnObjList=function(){
-		return GcObjectList;
+		return this.GcObjectList;
 	}
 
-	function GcObject(key,callBack){
-		GcObjectList.push(this);
-		var key;
-		var value;
+	function GcObject(key,gcLib){
+		
+		//var key;
+		this.gcLib=gcLib;
 		this.onSync = function(){}
 		if(arguments.length==2){
-			key = key;
-			this.onSync = callBack;
+			this.key = key;
+			//this.onSync = callBack;
 
 		}else if(arguments.length==1){
-			key=key;
-		}
-		
-		this.sync =function(){
-			GcLib.getObject(key);
-			//return value;
-		}
-		this.submit = function (obj){
-			GcLib.setObject(key,obj);
-			value=obj;
+			this.key=key;
 		}
 
+		this.sync =function(){
+			this.gcLib.getObject(key);
+			//return value;
+		}
+	
 		this.setValue = function(val){
-			value=val;
+			this.value=val;
 		}
 		this.getValue = function(){
-			return value;
+			return this.value;
 		}
 
 		this.getKey=function(){
-			return key;
+			return this.key;
 		}
 		//callBack function
-		
+
 
 	}
 	function GcList(key,callBack){
-		
+
 		this.onSync= function(){}
 		if(arguments.length==2){
 			key = key;
@@ -271,12 +288,6 @@ function GameCenter() {
 
 		}
 
-
-
-
-
 	}
 
 }
-
-
